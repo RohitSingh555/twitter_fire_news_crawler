@@ -36,12 +36,11 @@ FIRE_HASHTAG_REGEX = re.compile(r"#(fire|wildfire|housefire|apartmentfire|storef
 
 import itertools
 
-# Generate all combinations: [state] [fire keyword] [peril]
+# Generate all combinations: [state] [fire keyword]
 FIRE_SEARCH_COMBINATIONS = [
-    f"{state} {fire} {peril}"
+    f"{state} {fire}"
     for state in US_STATES
     for fire in FIRE_KEYWORDS
-    for peril in PERILS
 ]
 
 def get_all_fire_hashtags():
