@@ -1,0 +1,8 @@
+env/*
+.env
+tweets_cleaned.json
+tweets.json
+__pycache__/ai_fire_verifier.cpython-312.pyc
+tweets_raw.json
+verified_fires.xlsx
+__pycache__/fire_search_targets.cpython-312.pyc

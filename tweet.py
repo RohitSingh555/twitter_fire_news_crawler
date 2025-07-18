@@ -87,7 +87,11 @@ def scrape_tweets():
 
                 # 🔹 Extract Tweet URL
                 try:
-                    tweet_url = "https://twitter.com" + tweet.find_element(By.XPATH, ".//time/parent::a").get_attribute("href")
+                    href = tweet.find_element(By.XPATH, ".//time/parent::a").get_attribute("href")
+                    if href.startswith("http://") or href.startswith("https://"):
+                        tweet_url = href
+                    else:
+                        tweet_url = "https://twitter.com" + href
                 except:
                     tweet_url = "URL Not Found"
 
