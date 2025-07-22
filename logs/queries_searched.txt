@@ -1,0 +1,685 @@
+============================================================
+QUERIES SEARCHED LOG  |  2025-07-21 19:10:39
+============================================================
+Total Queries: 678
+
+No.   Query                                                        Mode  
+--------------------------------------------------------------------------------
+1     Arizona house fire                                           top   
+2     Arizona house fire                                           live  
+3     Arizona apartment complex                                    top   
+4     Arizona apartment complex                                    live  
+5     Arizona store fire                                           top   
+6     Arizona store fire                                           live  
+7     Arizona commercial fire                                      top   
+8     Arizona commercial fire                                      live  
+9     Arizona restaurant fire                                      top   
+10    Arizona restaurant fire                                      live  
+11    Arizona warehouse fire                                       top   
+12    Arizona warehouse fire                                       live  
+13    Arizona business fire                                        top   
+14    Arizona business fire                                        live  
+15    Arizona pipe burst                                           top   
+16    Arizona pipe burst                                           live  
+17    Colorado house fire                                          top   
+18    Colorado house fire                                          live  
+19    Colorado apartment complex                                   top   
+20    Colorado apartment complex                                   live  
+21    Colorado store fire                                          top   
+22    Colorado store fire                                          live  
+23    Colorado commercial fire                                     top   
+24    Colorado commercial fire                                     live  
+25    Colorado restaurant fire                                     top   
+26    Colorado restaurant fire                                     live  
+27    Colorado warehouse fire                                      top   
+28    Colorado warehouse fire                                      live  
+29    Colorado business fire                                       top   
+30    Colorado business fire                                       live  
+31    Colorado pipe burst                                          top   
+32    Colorado pipe burst                                          live  
+33    Connecticut house fire                                       top   
+34    Connecticut house fire                                       live  
+35    Connecticut apartment complex                                top   
+36    Connecticut apartment complex                                live  
+37    Connecticut store fire                                       top   
+38    Connecticut store fire                                       live  
+39    Connecticut commercial fire                                  top   
+40    Connecticut commercial fire                                  live  
+41    Connecticut restaurant fire                                  top   
+42    Connecticut restaurant fire                                  live  
+43    Connecticut warehouse fire                                   top   
+44    Connecticut warehouse fire                                   live  
+45    Connecticut business fire                                    top   
+46    Connecticut business fire                                    live  
+47    Connecticut pipe burst                                       top   
+48    Connecticut pipe burst                                       live  
+49    Delaware house fire                                          top   
+50    Delaware house fire                                          live  
+51    Delaware apartment complex                                   top   
+52    Delaware apartment complex                                   live  
+53    Delaware store fire                                          top   
+54    Delaware store fire                                          live  
+55    Delaware commercial fire                                     top   
+56    Delaware commercial fire                                     live  
+57    Delaware restaurant fire                                     top   
+58    Delaware restaurant fire                                     live  
+59    Delaware warehouse fire                                      top   
+60    Delaware warehouse fire                                      live  
+61    Delaware business fire                                       top   
+62    Delaware business fire                                       live  
+63    Delaware pipe burst                                          top   
+64    Delaware pipe burst                                          live  
+65    Florida house fire                                           top   
+66    Florida house fire                                           live  
+67    Florida apartment complex                                    top   
+68    Florida apartment complex                                    live  
+69    Florida store fire                                           top   
+70    Florida store fire                                           live  
+71    Florida commercial fire                                      top   
+72    Florida commercial fire                                      live  
+73    Florida restaurant fire                                      top   
+74    Florida restaurant fire                                      live  
+75    Florida warehouse fire                                       top   
+76    Florida warehouse fire                                       live  
+77    Florida business fire                                        top   
+78    Florida business fire                                        live  
+79    Florida pipe burst                                           top   
+80    Florida pipe burst                                           live  
+81    Georgia house fire                                           top   
+82    Georgia house fire                                           live  
+83    Georgia apartment complex                                    top   
+84    Georgia apartment complex                                    live  
+85    Georgia store fire                                           top   
+86    Georgia store fire                                           live  
+87    Georgia commercial fire                                      top   
+88    Georgia commercial fire                                      live  
+89    Georgia restaurant fire                                      top   
+90    Georgia restaurant fire                                      live  
+91    Georgia warehouse fire                                       top   
+92    Georgia warehouse fire                                       live  
+93    Georgia business fire                                        top   
+94    Georgia business fire                                        live  
+95    Georgia pipe burst                                           top   
+96    Georgia pipe burst                                           live  
+97    Idaho house fire                                             top   
+98    Idaho house fire                                             live  
+99    Idaho apartment complex                                      top   
+100   Idaho apartment complex                                      live  
+101   Idaho store fire                                             top   
+102   Idaho store fire                                             live  
+103   Idaho commercial fire                                        top   
+104   Idaho commercial fire                                        live  
+105   Idaho restaurant fire                                        top   
+106   Idaho restaurant fire                                        live  
+107   Idaho warehouse fire                                         top   
+108   Idaho warehouse fire                                         live  
+109   Idaho business fire                                          top   
+110   Idaho business fire                                          live  
+111   Idaho pipe burst                                             top   
+112   Idaho pipe burst                                             live  
+113   Indiana house fire                                           top   
+114   Indiana house fire                                           live  
+115   Indiana apartment complex                                    top   
+116   Indiana apartment complex                                    live  
+117   Indiana store fire                                           top   
+118   Indiana store fire                                           live  
+119   Indiana commercial fire                                      top   
+120   Indiana commercial fire                                      live  
+121   Indiana restaurant fire                                      top   
+122   Indiana restaurant fire                                      live  
+123   Indiana warehouse fire                                       top   
+124   Indiana warehouse fire                                       live  
+125   Indiana business fire                                        top   
+126   Indiana business fire                                        live  
+127   Indiana pipe burst                                           top   
+128   Indiana pipe burst                                           live  
+129   Iowa house fire                                              top   
+130   Iowa house fire                                              live  
+131   Iowa apartment complex                                       top   
+132   Iowa apartment complex                                       live  
+133   Iowa store fire                                              top   
+134   Iowa store fire                                              live  
+135   Iowa commercial fire                                         top   
+136   Iowa commercial fire                                         live  
+137   Iowa restaurant fire                                         top   
+138   Iowa restaurant fire                                         live  
+139   Iowa warehouse fire                                          top   
+140   Iowa warehouse fire                                          live  
+141   Iowa business fire                                           top   
+142   Iowa business fire                                           live  
+143   Iowa pipe burst                                              top   
+144   Iowa pipe burst                                              live  
+145   Kansas house fire                                            top   
+146   Kansas house fire                                            live  
+147   Kansas apartment complex                                     top   
+148   Kansas apartment complex                                     live  
+149   Kansas store fire                                            top   
+150   Kansas store fire                                            live  
+151   Kansas commercial fire                                       top   
+152   Kansas commercial fire                                       live  
+153   Kansas restaurant fire                                       top   
+154   Kansas restaurant fire                                       live  
+155   Kansas warehouse fire                                        top   
+156   Kansas warehouse fire                                        live  
+157   Kansas business fire                                         top   
+158   Kansas business fire                                         live  
+159   Kansas pipe burst                                            top   
+160   Kansas pipe burst                                            live  
+161   Kentucky house fire                                          top   
+162   Kentucky house fire                                          live  
+163   Kentucky apartment complex                                   top   
+164   Kentucky apartment complex                                   live  
+165   Kentucky store fire                                          top   
+166   Kentucky store fire                                          live  
+167   Kentucky commercial fire                                     top   
+168   Kentucky commercial fire                                     live  
+169   Kentucky restaurant fire                                     top   
+170   Kentucky restaurant fire                                     live  
+171   Kentucky warehouse fire                                      top   
+172   Kentucky warehouse fire                                      live  
+173   Kentucky business fire                                       top   
+174   Kentucky business fire                                       live  
+175   Kentucky pipe burst                                          top   
+176   Kentucky pipe burst                                          live  
+177   Louisiana house fire                                         top   
+178   Louisiana house fire                                         live  
+179   Louisiana apartment complex                                  top   
+180   Louisiana apartment complex                                  live  
+181   Louisiana store fire                                         top   
+182   Louisiana store fire                                         live  
+183   Louisiana commercial fire                                    top   
+184   Louisiana commercial fire                                    live  
+185   Louisiana restaurant fire                                    top   
+186   Louisiana restaurant fire                                    live  
+187   Louisiana warehouse fire                                     top   
+188   Louisiana warehouse fire                                     live  
+189   Louisiana business fire                                      top   
+190   Louisiana business fire                                      live  
+191   Louisiana pipe burst                                         top   
+192   Louisiana pipe burst                                         live  
+193   Maine house fire                                             top   
+194   Maine house fire                                             live  
+195   Maine apartment complex                                      top   
+196   Maine apartment complex                                      live  
+197   Maine store fire                                             top   
+198   Maine store fire                                             live  
+199   Maine commercial fire                                        top   
+200   Maine commercial fire                                        live  
+201   Maine restaurant fire                                        top   
+202   Maine restaurant fire                                        live  
+203   Maine warehouse fire                                         top   
+204   Maine warehouse fire                                         live  
+205   Maine business fire                                          top   
+206   Maine business fire                                          live  
+207   Maine pipe burst                                             top   
+208   Maine pipe burst                                             live  
+209   Maryland house fire                                          top   
+210   Maryland house fire                                          live  
+211   Maryland apartment complex                                   top   
+212   Maryland apartment complex                                   live  
+213   Maryland store fire                                          top   
+214   Maryland store fire                                          live  
+215   Maryland commercial fire                                     top   
+216   Maryland commercial fire                                     live  
+217   Maryland restaurant fire                                     top   
+218   Maryland restaurant fire                                     live  
+219   Maryland warehouse fire                                      top   
+220   Maryland warehouse fire                                      live  
+221   Maryland business fire                                       top   
+222   Maryland business fire                                       live  
+223   Maryland pipe burst                                          top   
+224   Maryland pipe burst                                          live  
+225   Michigan house fire                                          top   
+226   Michigan house fire                                          live  
+227   Michigan apartment complex                                   top   
+228   Michigan apartment complex                                   live  
+229   Michigan store fire                                          top   
+230   Michigan store fire                                          live  
+231   Michigan commercial fire                                     top   
+232   Michigan commercial fire                                     live  
+233   Michigan restaurant fire                                     top   
+234   Michigan restaurant fire                                     live  
+235   Michigan warehouse fire                                      top   
+236   Michigan warehouse fire                                      live  
+237   Michigan business fire                                       top   
+238   Michigan business fire                                       live  
+239   Michigan pipe burst                                          top   
+240   Michigan pipe burst                                          live  
+241   Minnesota house fire                                         top   
+242   Minnesota house fire                                         live  
+243   Minnesota apartment complex                                  top   
+244   Minnesota apartment complex                                  live  
+245   Minnesota store fire                                         top   
+246   Minnesota store fire                                         live  
+247   Minnesota commercial fire                                    top   
+248   Minnesota commercial fire                                    live  
+249   Minnesota restaurant fire                                    top   
+250   Minnesota restaurant fire                                    live  
+251   Minnesota warehouse fire                                     top   
+252   Minnesota warehouse fire                                     live  
+253   Minnesota business fire                                      top   
+254   Minnesota business fire                                      live  
+255   Minnesota pipe burst                                         top   
+256   Minnesota pipe burst                                         live  
+257   Mississippi house fire                                       top   
+258   Mississippi house fire                                       live  
+259   Mississippi apartment complex                                top   
+260   Mississippi apartment complex                                live  
+261   Mississippi store fire                                       top   
+262   Mississippi store fire                                       live  
+263   Mississippi commercial fire                                  top   
+264   Mississippi commercial fire                                  live  
+265   Mississippi restaurant fire                                  top   
+266   Mississippi restaurant fire                                  live  
+267   Mississippi warehouse fire                                   top   
+268   Mississippi warehouse fire                                   live  
+269   Mississippi business fire                                    top   
+270   Mississippi business fire                                    live  
+271   Mississippi pipe burst                                       top   
+272   Mississippi pipe burst                                       live  
+273   Montana house fire                                           top   
+274   Montana house fire                                           live  
+275   Montana apartment complex                                    top   
+276   Montana apartment complex                                    live  
+277   Montana store fire                                           top   
+278   Montana store fire                                           live  
+279   Montana commercial fire                                      top   
+280   Montana commercial fire                                      live  
+281   Montana restaurant fire                                      top   
+282   Montana restaurant fire                                      live  
+283   Montana warehouse fire                                       top   
+284   Montana warehouse fire                                       live  
+285   Montana business fire                                        top   
+286   Montana business fire                                        live  
+287   Montana pipe burst                                           top   
+288   Montana pipe burst                                           live  
+289   Nebraska house fire                                          top   
+290   Nebraska house fire                                          live  
+291   Nebraska apartment complex                                   top   
+292   Nebraska apartment complex                                   live  
+293   Nebraska store fire                                          top   
+294   Nebraska store fire                                          live  
+295   Nebraska commercial fire                                     top   
+296   Nebraska commercial fire                                     live  
+297   Nebraska restaurant fire                                     top   
+298   Nebraska restaurant fire                                     live  
+299   Nebraska warehouse fire                                      top   
+300   Nebraska warehouse fire                                      live  
+301   Nebraska business fire                                       top   
+302   Nebraska business fire                                       live  
+303   Nebraska pipe burst                                          top   
+304   Nebraska pipe burst                                          live  
+305   Nevada house fire                                            top   
+306   Nevada house fire                                            live  
+307   Nevada apartment complex                                     top   
+308   Nevada apartment complex                                     live  
+309   Nevada store fire                                            top   
+310   Nevada store fire                                            live  
+311   Nevada commercial fire                                       top   
+312   Nevada commercial fire                                       live  
+313   Nevada restaurant fire                                       top   
+314   Nevada restaurant fire                                       live  
+315   Nevada warehouse fire                                        top   
+316   Nevada warehouse fire                                        live  
+317   Nevada business fire                                         top   
+318   Nevada business fire                                         live  
+319   Nevada pipe burst                                            top   
+320   Nevada pipe burst                                            live  
+321   New Hampshire house fire                                     top   
+322   New Hampshire house fire                                     live  
+323   New Hampshire apartment complex                              top   
+324   New Hampshire apartment complex                              live  
+325   New Hampshire store fire                                     top   
+326   New Hampshire store fire                                     live  
+327   New Hampshire commercial fire                                top   
+328   New Hampshire commercial fire                                live  
+329   New Hampshire restaurant fire                                top   
+330   New Hampshire restaurant fire                                live  
+331   New Hampshire warehouse fire                                 top   
+332   New Hampshire warehouse fire                                 live  
+333   New Hampshire business fire                                  top   
+334   New Hampshire business fire                                  live  
+335   New Hampshire pipe burst                                     top   
+336   New Hampshire pipe burst                                     live  
+337   New Jersey house fire                                        top   
+338   New Jersey house fire                                        live  
+339   New Jersey apartment complex                                 top   
+340   New Jersey apartment complex                                 live  
+341   New Jersey store fire                                        top   
+342   New Jersey store fire                                        live  
+343   New Jersey commercial fire                                   top   
+344   New Jersey commercial fire                                   live  
+345   New Jersey restaurant fire                                   top   
+346   New Jersey restaurant fire                                   live  
+347   New Jersey warehouse fire                                    top   
+348   New Jersey warehouse fire                                    live  
+349   New Jersey business fire                                     top   
+350   New Jersey business fire                                     live  
+351   New Jersey pipe burst                                        top   
+352   New Jersey pipe burst                                        live  
+353   New Mexico house fire                                        top   
+354   New Mexico house fire                                        live  
+355   New Mexico apartment complex                                 top   
+356   New Mexico apartment complex                                 live  
+357   New Mexico store fire                                        top   
+358   New Mexico store fire                                        live  
+359   New Mexico commercial fire                                   top   
+360   New Mexico commercial fire                                   live  
+361   New Mexico restaurant fire                                   top   
+362   New Mexico restaurant fire                                   live  
+363   New Mexico warehouse fire                                    top   
+364   New Mexico warehouse fire                                    live  
+365   New Mexico business fire                                     top   
+366   New Mexico business fire                                     live  
+367   New Mexico pipe burst                                        top   
+368   New Mexico pipe burst                                        live  
+369   North Carolina house fire                                    top   
+370   North Carolina house fire                                    live  
+371   North Carolina apartment complex                             top   
+372   North Carolina apartment complex                             live  
+373   North Carolina store fire                                    top   
+374   North Carolina store fire                                    live  
+375   North Carolina commercial fire                               top   
+376   North Carolina commercial fire                               live  
+377   North Carolina restaurant fire                               top   
+378   North Carolina restaurant fire                               live  
+379   North Carolina warehouse fire                                top   
+380   North Carolina warehouse fire                                live  
+381   North Carolina business fire                                 top   
+382   North Carolina business fire                                 live  
+383   North Carolina pipe burst                                    top   
+384   North Carolina pipe burst                                    live  
+385   North Dakota house fire                                      top   
+386   North Dakota house fire                                      live  
+387   North Dakota apartment complex                               top   
+388   North Dakota apartment complex                               live  
+389   North Dakota store fire                                      top   
+390   North Dakota store fire                                      live  
+391   North Dakota commercial fire                                 top   
+392   North Dakota commercial fire                                 live  
+393   North Dakota restaurant fire                                 top   
+394   North Dakota restaurant fire                                 live  
+395   North Dakota warehouse fire                                  top   
+396   North Dakota warehouse fire                                  live  
+397   North Dakota business fire                                   top   
+398   North Dakota business fire                                   live  
+399   North Dakota pipe burst                                      top   
+400   North Dakota pipe burst                                      live  
+401   Ohio house fire                                              top   
+402   Ohio house fire                                              live  
+403   Ohio apartment complex                                       top   
+404   Ohio apartment complex                                       live  
+405   Ohio store fire                                              top   
+406   Ohio store fire                                              live  
+407   Ohio commercial fire                                         top   
+408   Ohio commercial fire                                         live  
+409   Ohio restaurant fire                                         top   
+410   Ohio restaurant fire                                         live  
+411   Ohio warehouse fire                                          top   
+412   Ohio warehouse fire                                          live  
+413   Ohio business fire                                           top   
+414   Ohio business fire                                           live  
+415   Ohio pipe burst                                              top   
+416   Ohio pipe burst                                              live  
+417   Oklahoma house fire                                          top   
+418   Oklahoma house fire                                          live  
+419   Oklahoma apartment complex                                   top   
+420   Oklahoma apartment complex                                   live  
+421   Oklahoma store fire                                          top   
+422   Oklahoma store fire                                          live  
+423   Oklahoma commercial fire                                     top   
+424   Oklahoma commercial fire                                     live  
+425   Oklahoma restaurant fire                                     top   
+426   Oklahoma restaurant fire                                     live  
+427   Oklahoma warehouse fire                                      top   
+428   Oklahoma warehouse fire                                      live  
+429   Oklahoma business fire                                       top   
+430   Oklahoma business fire                                       live  
+431   Oklahoma pipe burst                                          top   
+432   Oklahoma pipe burst                                          live  
+433   Oregon house fire                                            top   
+434   Oregon house fire                                            live  
+435   Oregon apartment complex                                     top   
+436   Oregon apartment complex                                     live  
+437   Oregon store fire                                            top   
+438   Oregon store fire                                            live  
+439   Oregon commercial fire                                       top   
+440   Oregon commercial fire                                       live  
+441   Oregon restaurant fire                                       top   
+442   Oregon restaurant fire                                       live  
+443   Oregon warehouse fire                                        top   
+444   Oregon warehouse fire                                        live  
+445   Oregon business fire                                         top   
+446   Oregon business fire                                         live  
+447   Oregon pipe burst                                            top   
+448   Oregon pipe burst                                            live  
+449   South Carolina house fire                                    top   
+450   South Carolina house fire                                    live  
+451   South Carolina apartment complex                             top   
+452   South Carolina apartment complex                             live  
+453   South Carolina store fire                                    top   
+454   South Carolina store fire                                    live  
+455   South Carolina commercial fire                               top   
+456   South Carolina commercial fire                               live  
+457   South Carolina restaurant fire                               top   
+458   South Carolina restaurant fire                               live  
+459   South Carolina warehouse fire                                top   
+460   South Carolina warehouse fire                                live  
+461   South Carolina business fire                                 top   
+462   South Carolina business fire                                 live  
+463   South Carolina pipe burst                                    top   
+464   South Carolina pipe burst                                    live  
+465   Tennessee house fire                                         top   
+466   Tennessee house fire                                         live  
+467   Tennessee apartment complex                                  top   
+468   Tennessee apartment complex                                  live  
+469   Tennessee store fire                                         top   
+470   Tennessee store fire                                         live  
+471   Tennessee commercial fire                                    top   
+472   Tennessee commercial fire                                    live  
+473   Tennessee restaurant fire                                    top   
+474   Tennessee restaurant fire                                    live  
+475   Tennessee warehouse fire                                     top   
+476   Tennessee warehouse fire                                     live  
+477   Tennessee business fire                                      top   
+478   Tennessee business fire                                      live  
+479   Tennessee pipe burst                                         top   
+480   Tennessee pipe burst                                         live  
+481   Texas house fire                                             top   
+482   Texas house fire                                             live  
+483   Texas apartment complex                                      top   
+484   Texas apartment complex                                      live  
+485   Texas store fire                                             top   
+486   Texas store fire                                             live  
+487   Texas commercial fire                                        top   
+488   Texas commercial fire                                        live  
+489   Texas restaurant fire                                        top   
+490   Texas restaurant fire                                        live  
+491   Texas warehouse fire                                         top   
+492   Texas warehouse fire                                         live  
+493   Texas business fire                                          top   
+494   Texas business fire                                          live  
+495   Texas pipe burst                                             top   
+496   Texas pipe burst                                             live  
+497   US Virgin Islands house fire                                 top   
+498   US Virgin Islands house fire                                 live  
+499   US Virgin Islands apartment complex                          top   
+500   US Virgin Islands apartment complex                          live  
+501   US Virgin Islands store fire                                 top   
+502   US Virgin Islands store fire                                 live  
+503   US Virgin Islands commercial fire                            top   
+504   US Virgin Islands commercial fire                            live  
+505   US Virgin Islands restaurant fire                            top   
+506   US Virgin Islands restaurant fire                            live  
+507   US Virgin Islands warehouse fire                             top   
+508   US Virgin Islands warehouse fire                             live  
+509   US Virgin Islands business fire                              top   
+510   US Virgin Islands business fire                              live  
+511   US Virgin Islands pipe burst                                 top   
+512   US Virgin Islands pipe burst                                 live  
+513   Utah house fire                                              top   
+514   Utah house fire                                              live  
+515   Utah apartment complex                                       top   
+516   Utah apartment complex                                       live  
+517   Utah store fire                                              top   
+518   Utah store fire                                              live  
+519   Utah commercial fire                                         top   
+520   Utah commercial fire                                         live  
+521   Utah restaurant fire                                         top   
+522   Utah restaurant fire                                         live  
+523   Utah warehouse fire                                          top   
+524   Utah warehouse fire                                          live  
+525   Utah business fire                                           top   
+526   Utah business fire                                           live  
+527   Utah pipe burst                                              top   
+528   Utah pipe burst                                              live  
+529   Vermont house fire                                           top   
+530   Vermont house fire                                           live  
+531   Vermont apartment complex                                    top   
+532   Vermont apartment complex                                    live  
+533   Vermont store fire                                           top   
+534   Vermont store fire                                           live  
+535   Vermont commercial fire                                      top   
+536   Vermont commercial fire                                      live  
+537   Vermont restaurant fire                                      top   
+538   Vermont restaurant fire                                      live  
+539   Vermont warehouse fire                                       top   
+540   Vermont warehouse fire                                       live  
+541   Vermont business fire                                        top   
+542   Vermont business fire                                        live  
+543   Vermont pipe burst                                           top   
+544   Vermont pipe burst                                           live  
+545   Virginia house fire                                          top   
+546   Virginia house fire                                          live  
+547   Virginia apartment complex                                   top   
+548   Virginia apartment complex                                   live  
+549   Virginia store fire                                          top   
+550   Virginia store fire                                          live  
+551   Virginia commercial fire                                     top   
+552   Virginia commercial fire                                     live  
+553   Virginia restaurant fire                                     top   
+554   Virginia restaurant fire                                     live  
+555   Virginia warehouse fire                                      top   
+556   Virginia warehouse fire                                      live  
+557   Virginia business fire                                       top   
+558   Virginia business fire                                       live  
+559   Virginia pipe burst                                          top   
+560   Virginia pipe burst                                          live  
+561   Washington house fire                                        top   
+562   Washington house fire                                        live  
+563   Washington apartment complex                                 top   
+564   Washington apartment complex                                 live  
+565   Washington store fire                                        top   
+566   Washington store fire                                        live  
+567   Washington commercial fire                                   top   
+568   Washington commercial fire                                   live  
+569   Washington restaurant fire                                   top   
+570   Washington restaurant fire                                   live  
+571   Washington warehouse fire                                    top   
+572   Washington warehouse fire                                    live  
+573   Washington business fire                                     top   
+574   Washington business fire                                     live  
+575   Washington pipe burst                                        top   
+576   Washington pipe burst                                        live  
+577   West Virginia house fire                                     top   
+578   West Virginia house fire                                     live  
+579   West Virginia apartment complex                              top   
+580   West Virginia apartment complex                              live  
+581   West Virginia store fire                                     top   
+582   West Virginia store fire                                     live  
+583   West Virginia commercial fire                                top   
+584   West Virginia commercial fire                                live  
+585   West Virginia restaurant fire                                top   
+586   West Virginia restaurant fire                                live  
+587   West Virginia warehouse fire                                 top   
+588   West Virginia warehouse fire                                 live  
+589   West Virginia business fire                                  top   
+590   West Virginia business fire                                  live  
+591   West Virginia pipe burst                                     top   
+592   West Virginia pipe burst                                     live  
+593   Wisconsin house fire                                         top   
+594   Wisconsin house fire                                         live  
+595   Wisconsin apartment complex                                  top   
+596   Wisconsin apartment complex                                  live  
+597   Wisconsin store fire                                         top   
+598   Wisconsin store fire                                         live  
+599   Wisconsin commercial fire                                    top   
+600   Wisconsin commercial fire                                    live  
+601   Wisconsin restaurant fire                                    top   
+602   Wisconsin restaurant fire                                    live  
+603   Wisconsin warehouse fire                                     top   
+604   Wisconsin warehouse fire                                     live  
+605   Wisconsin business fire                                      top   
+606   Wisconsin business fire                                      live  
+607   Wisconsin pipe burst                                         top   
+608   Wisconsin pipe burst                                         live  
+609   Wyoming house fire                                           top   
+610   Wyoming house fire                                           live  
+611   Wyoming apartment complex                                    top   
+612   Wyoming apartment complex                                    live  
+613   Wyoming store fire                                           top   
+614   Wyoming store fire                                           live  
+615   Wyoming commercial fire                                      top   
+616   Wyoming commercial fire                                      live  
+617   Wyoming restaurant fire                                      top   
+618   Wyoming restaurant fire                                      live  
+619   Wyoming warehouse fire                                       top   
+620   Wyoming warehouse fire                                       live  
+621   Wyoming business fire                                        top   
+622   Wyoming business fire                                        live  
+623   Wyoming pipe burst                                           top   
+624   Wyoming pipe burst                                           live  
+625   DC house fire                                                top   
+626   DC house fire                                                live  
+627   DC apartment complex                                         top   
+628   DC apartment complex                                         live  
+629   DC store fire                                                top   
+630   DC store fire                                                live  
+631   DC commercial fire                                           top   
+632   DC commercial fire                                           live  
+633   DC restaurant fire                                           top   
+634   DC restaurant fire                                           live  
+635   DC warehouse fire                                            top   
+636   DC warehouse fire                                            live  
+637   DC business fire                                             top   
+638   DC business fire                                             live  
+639   DC pipe burst                                                top   
+640   DC pipe burst                                                live  
+641   from:DFWscanner                                              top   
+642   from:DFWscanner                                              live  
+643   from:DallasTexasTV                                           top   
+644   from:DallasTexasTV                                           live  
+645   from:NWSSanAntonio                                           top   
+646   from:NWSSanAntonio                                           live  
+647   from:FriscoFFD                                               top   
+648   from:FriscoFFD                                               live  
+649   from:RedCrossTXGC                                            top   
+650   from:RedCrossTXGC                                            live  
+651   from:whatsupTucson                                           top   
+652   from:whatsupTucson                                           live  
+653   from:WacoTXFire                                              top   
+654   from:WacoTXFire                                              live  
+655   from:SouthMetroPIO                                           top   
+656   from:SouthMetroPIO                                           live  
+657   from:NWSBoulder                                              top   
+658   from:NWSBoulder                                              live  
+659   from:SeattleFire                                             top   
+660   from:SeattleFire                                             live  
+661   from:CityofMiamiFire                                         top   
+662   from:CityofMiamiFire                                         live  
+663   from:PeterNewcomb41                                          top   
+664   from:PeterNewcomb41                                          live  
+665   from:ffxfirerescue                                           top   
+666   from:ffxfirerescue                                           live  
+667   from:ScannerRadioDFW                                         top   
+668   from:ScannerRadioDFW                                         live  
+669   from:sfgafirerescue                                          top   
+670   from:sfgafirerescue                                          live  
+671   from:THEJFRD                                                 top   
+672   from:THEJFRD                                                 live  
+673   from:ChicagoMWeather                                         top   
+674   from:ChicagoMWeather                                         live  
+675   from:ToledoFire                                              top   
+676   from:ToledoFire                                              live  
+677   from:AustinFireInfo                                          top   
+678   from:AustinFireInfo                                          live  
