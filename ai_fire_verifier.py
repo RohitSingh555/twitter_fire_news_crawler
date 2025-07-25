@@ -5,30 +5,12 @@ import pandas as pd
 from dotenv import load_dotenv
 from tqdm import tqdm
 from openpyxl import load_workbook
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 import glob
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = openai
-
-def is_today_or_yesterday(iso_timestamp):
-    try:
-        tweet_time = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
-        now = datetime.now(tweet_time.tzinfo)
-        today = now.date()
-        yesterday = today - timedelta(days=1)
-        return tweet_time.date() in (today, yesterday)
-    except Exception:
-        return False
-
-def is_within_last_72_hours(iso_timestamp):
-    try:
-        tweet_time = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
-        now = datetime.now(timezone.utc)
-        return (now - tweet_time).total_seconds() <= 72 * 3600
-    except Exception:
-        return False
 
 def get_fire_related_score(content):
     prompt = (
@@ -48,7 +30,6 @@ def get_fire_related_score(content):
             temperature=0,
         )
         answer = ai_response.choices[0].message.content.strip()
-        # Extract the first integer in the answer
         import re
         match = re.search(r'\b(10|[0-9])\b', answer)
         if match:
@@ -62,13 +43,13 @@ def verify_fire_incident(title, content, url, country="USA"):
     print(url)
     truncated_content = content[:4000]
     fire_incident_prompt = (
-    "You are given the content of a tweet or news snippet. Determine if it describes a fire incident in the United States that likely caused damage to physical structures (such as homes, apartments, offices, commercial buildings, factories, or infrastructure). "
-    "The fire may have resulted in structural damage or destruction, due to causes like electrical faults, negligence, accidents, natural disasters (e.g., wildfires), or arson. "
-    "Be inclusive: If the tweet/news suggests a fire incident with possible or likely damage to structures, even if not 100% explicit, respond with 'yes'. "
-    "Respond with 'yes' if the tweet/news is about a fire incident in the USA that could have caused damage to physical structures. Otherwise, respond with 'no'.\n\n"
-    f"Content: {truncated_content}\nURL: {url}\n"
-    "Only use the provided content for your evaluation. Do not infer or assume details not present in the text, but err on the side of inclusion if the fire incident is plausible."
-)
+        "You are given the content of a tweet or news snippet. Determine if it describes a fire incident in the United States that likely caused damage to physical structures (such as homes, apartments, offices, commercial buildings, factories, or infrastructure). "
+        "The fire may have resulted in structural damage or destruction, due to causes like electrical faults, negligence, accidents, natural disasters (e.g., wildfires), or arson. "
+        "Be inclusive: If the tweet/news suggests a fire incident with possible or likely damage to structures, even if not 100% explicit, respond with 'yes'. "
+        "Respond with 'yes' if the tweet/news is about a fire incident in the USA that could have caused damage to physical structures. Otherwise, respond with 'no'.\n\n"
+        f"Content: {truncated_content}\nURL: {url}\n"
+        "Only use the provided content for your evaluation. Do not infer or assume details not present in the text, but err on the side of inclusion if the fire incident is plausible."
+    )
     messages = [
         {
             "role": "system",
@@ -105,47 +86,26 @@ def update_live_json(live_json_path, entry):
     finally:
         lock.release()
 
-def autosize_excel_columns(excel_path):
-    wb = load_workbook(excel_path)
-    ws = wb.active
-    for column_cells in ws.columns:
-        max_length = 0
-        column = column_cells[0].column_letter
-        for cell in column_cells:
-            try:
-                cell_length = len(str(cell.value)) if cell.value else 0
-                if cell_length > max_length:
-                    max_length = cell_length
-            except Exception:
-                pass
-        adjusted_width = min(max_length + 2, 80)  # Cap width for readability
-        ws.column_dimensions[column].width = adjusted_width
-    wb.save(excel_path)
-
 def autosize_and_format_excel(excel_path):
     from openpyxl.utils import get_column_letter
     wb = load_workbook(excel_path)
     ws = wb.active
     default_width = 30
-    # Set default column width and wrap text
     for col in ws.columns:
         col_letter = get_column_letter(col[0].column)
         ws.column_dimensions[col_letter].width = default_width
         for cell in col:
             cell.alignment = cell.alignment.copy(wrap_text=True)
-    # Auto-fit row height to content
     for row in ws.iter_rows():
         max_height = 15
         for cell in row:
             if cell.value:
                 lines = str(cell.value).count("\n") + 1
                 length = len(str(cell.value))
-                # Estimate height: 15 per line, or more if long text
                 est_height = max(15, min(150, lines * 15 + length // 50 * 15))
                 if est_height > max_height:
                     max_height = est_height
         ws.row_dimensions[row[0].row].height = max_height
-    # Make URL column clickable
     url_col = None
     for idx, cell in enumerate(ws[1], 1):
         if cell.value and str(cell.value).lower() == "url":
@@ -159,10 +119,15 @@ def autosize_and_format_excel(excel_path):
                     cell.style = "Hyperlink"
     wb.save(excel_path)
 
-
-def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fires.xlsx", live_json_path="output/live_verified_fires.json"):
+def verify_and_save_to_excel(cleaned_json_path, excel_path=None, live_json_path=None):
     import os
     import pandas as pd
+    # Generate timestamped filenames
+    dt_str = datetime.now().strftime('%d%b_%H%M').lower()
+    if excel_path is None:
+        excel_path = f"output/verified_fires_{dt_str}.xlsx"
+    if live_json_path is None:
+        live_json_path = f"output/live_verified_fires_{dt_str}.json"
     os.makedirs(os.path.dirname(excel_path), exist_ok=True)
     os.makedirs(os.path.dirname(live_json_path), exist_ok=True)
     with open(cleaned_json_path, "r", encoding="utf-8") as f:
@@ -190,9 +155,7 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
                 "verified_at": verified_at
             }
             verified_rows.append(row)
-            # Live update JSON for every 'yes' entry
             update_live_json(live_json_path, row)
-            # Save to Excel immediately (append mode)
             if os.path.exists(excel_path):
                 df_existing = pd.read_excel(excel_path)
                 df_new = pd.DataFrame([row])
@@ -204,7 +167,6 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
             autosize_and_format_excel(excel_path)
     if verified_rows:
         print(f"✅ Saved {len(verified_rows)} verified fire incidents to {excel_path} and {live_json_path}")
-        # --- EMAIL SENDING LOGIC ---
         import smtplib
         from email.message import EmailMessage
         EMAIL_HOST = 'smtp.gmail.com'
@@ -227,7 +189,6 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
                 server.starttls()
                 server.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
                 server.send_message(msg)
-        # Send the email with both the Excel and JSON files
         send_email_with_attachment(
             subject="Verified Fire Incidents - Latest Batch",
             body="Please find attached the latest verified fire incidents (Excel and JSON).",
@@ -240,17 +201,17 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
 
 if __name__ == "__main__":
     import sys
-    # If no argument is given, use the latest date-prefixed *_filtered_tweets.json file
+    dt_str = datetime.now().strftime('%d%b_%H%M').lower()
     if len(sys.argv) > 1:
         json_path = sys.argv[1]
     else:
-        filtered_files = sorted(glob.glob("*_filtered_tweets.json"), reverse=True)
+        filtered_files = sorted(glob.glob("*_cleaned_tweets.json"), reverse=True)
         if filtered_files:
             json_path = filtered_files[0]
-            print(f"No input file specified. Using latest filtered file: {json_path}")
+            print(f"No input file specified. Using latest cleaned file: {json_path}")
         else:
-            print("No filtered tweets file found. Please run tweet_fire_search.py first or specify a file.")
+            print("No cleaned tweets file found. Please run tweet_fire_search.py first or specify a file.")
             exit(1)
-    excel_path = "output/verified_fires.xlsx"
-    live_json_path = "output/live_verified_fires.json"
+    excel_path = f"output/verified_fires_{dt_str}.xlsx"
+    live_json_path = f"output/live_verified_fires_{dt_str}.json"
     verify_and_save_to_excel(json_path, excel_path, live_json_path) 

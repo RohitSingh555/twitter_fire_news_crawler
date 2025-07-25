@@ -8,59 +8,37 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from fire_search_targets import get_all_fire_hashtags, get_all_fire_accounts, get_all_fire_search_combinations
-from selenium.common.exceptions import WebDriverException
+from fire_search_targets import get_all_fire_accounts, get_all_fire_search_combinations
 from urllib.parse import quote
-import re
 from datetime import datetime, timedelta, timezone
-from ai_fire_verifier import verify_and_save_to_excel
-import threading
-import shutil
-from contextlib import redirect_stdout
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import sys
 
 # Date string for filenames
 DATE_STR = datetime.now().strftime('%d%b').lower()  # e.g., '24jul'
 
 TWITTER_USERNAME = "TechWfm63921"
 TWITTER_PASSWORD = "Pass@123"
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets.json")
 OUTPUT_RAW_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets_raw.json")
-OUTPUT_CLEANED_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets_cleaned.json")
-
-LOGS_DIR = os.path.join(os.path.dirname(__file__), f"logs_{DATE_STR}")
-QUERIES_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_queries_searched.txt")
-COMBOS_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_combination_keywords.txt")
-ACCOUNTS_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_accounts_searched.txt")
-SCRAPE_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_scrape.log")
-
-# ---
-# All search keywords, hashtags, perils, and state lists are now sourced from fire_search_targets.py
-# Do not define or use any search-related variables here.
-# ---
-
-# (No unused search variables remain in this script)
+# Remove unused OUTPUT_CLEANED_FILE
 
 # Setup WebDriver
 
 def setup_driver():
-    from selenium.webdriver.chrome.options import Options
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.binary_location = "/usr/bin/google-chrome"
-    # Print all options for debugging
-    print("Chrome options:", chrome_options.arguments)
+    # Only set binary_location on Linux
+    if sys.platform.startswith("linux"):
+        chrome_options.binary_location = "/usr/bin/google-chrome"
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
-# Load Existing Tweets
-
 def load_existing_tweets(raw=True):
-    file_path = OUTPUT_RAW_FILE if raw else OUTPUT_CLEANED_FILE
-    if os.path.exists(file_path):
+    file_path = OUTPUT_RAW_FILE if raw else None
+    if file_path and os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             try:
                 return json.load(file)
@@ -68,30 +46,33 @@ def load_existing_tweets(raw=True):
                 return []
     return []
 
-# Save Tweets to File
-
 def save_tweet(tweet_data, raw=True):
-    file_path = OUTPUT_RAW_FILE if raw else OUTPUT_CLEANED_FILE
+    file_path = OUTPUT_RAW_FILE if raw else None
+    # Always reload, deduplicate, and overwrite
     existing_tweets = load_existing_tweets(raw=raw)
-    if tweet_data not in existing_tweets:
+    # Remove any duplicate (by content, timestamp, and username)
+    is_duplicate = any(
+        tweet_data.get("content") == t.get("content") and
+        tweet_data.get("timestamp") == t.get("timestamp") and
+        tweet_data.get("username") == t.get("username")
+        for t in existing_tweets
+    )
+    if not is_duplicate:
         existing_tweets.append(tweet_data)
-        with open(file_path, "w", encoding="utf-8") as file:
-            json.dump(existing_tweets, file, indent=4, ensure_ascii=False)
-        print(f"✅ Tweet saved: {tweet_data['content'][:50]}... ({'raw' if raw else 'cleaned'})")
-
-# Twitter Login
+    # Overwrite the file with deduplicated list
+    with open(file_path, "w", encoding="utf-8") as file:
+        json.dump(existing_tweets, file, indent=4, ensure_ascii=False)
+    print(f"✅ Tweet saved: {tweet_data['content'][:50]}... (raw)")
 
 def twitter_login(driver):
     driver.get("https://twitter.com/login")
     try:
-        # Wait for the username/email field (update the name if Twitter changes it)
         username_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "text"))
         )
         username_input.send_keys(TWITTER_USERNAME)
         username_input.send_keys(Keys.RETURN)
         time.sleep(3)
-        # Wait for the password field
         password_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
@@ -104,27 +85,18 @@ def twitter_login(driver):
         print(driver.page_source)
         raise
 
-# Scrape recent tweets for a given search query
-
-def scrape_recent_tweets_for_query(driver, query, max_tweets=10, scroll_times=4, mode="live", tab_index=0, log_f=None):
+def scrape_recent_tweets_for_query(driver, query, max_tweets=10, scroll_times=4, mode="live", tab_index=0):
     encoded_query = quote(query)
     if mode == "live":
         search_url = f"https://twitter.com/search?q={encoded_query}&f=live"
     else:
         search_url = f"https://twitter.com/search?q={encoded_query}&f=top"
-    # Switch to the correct tab
-    driver.switch_to.window(driver.window_handles[tab_index])
     driver.get(search_url)
-    time.sleep(7)  # Wait longer for page to load
+    time.sleep(7)
     for _ in range(scroll_times):
         driver.execute_script("window.scrollBy(0, window.innerHeight);")
         time.sleep(random.uniform(2, 4))
     tweet_elements = driver.find_elements(By.XPATH, "//article[@role='article']")
-    msg = f"Found {len(tweet_elements)} tweets for query: {query}"
-    if log_f:
-        log_print(msg, log_f)
-    else:
-        print(msg)
     tweets_scraped = 0
     for tweet in tweet_elements:
         if tweets_scraped >= max_tweets:
@@ -159,257 +131,84 @@ def scrape_recent_tweets_for_query(driver, query, max_tweets=10, scroll_times=4,
                 "search_query": query,
                 "source_account": username
             }
-            msg = f"Extracted tweet: {content[:100]} | {timestamp} | {tweet_url}"
-            if log_f:
-                log_print(msg, log_f)
-            else:
-                print(msg)
             save_tweet(tweet_data, raw=True)
             tweets_scraped += 1
         except Exception as e:
-            msg = f"⚠️ Skipping tweet due to error: {e}"
-            if log_f:
-                log_print(msg, log_f)
-            else:
-                print(msg)
+            print(f"⚠️ Skipping tweet due to error: {e}")
             continue
 
-def safe_scrape(driver, query, max_retries=3, scroll_times=0, mode="live"):
-    for attempt in range(max_retries):
-        try:
-            scrape_recent_tweets_for_query(driver, query, scroll_times=scroll_times, mode=mode)
-            return True
-        except WebDriverException as e:
-            print(f"⚠️ Error for query '{query}' (mode={mode}): {e}. Retrying ({attempt+1}/{max_retries})...")
-            time.sleep(random.uniform(10, 30) * (attempt + 1))  # Exponential backoff
-    print(f"❌ Failed to scrape for query '{query}' (mode={mode}) after {max_retries} attempts.")
-    return False
+LOG_FILE = os.path.join(os.path.dirname(__file__), f"logs_{DATE_STR}.log")
 
-def save_logs(queries, combos, accounts):
-    if os.path.exists(LOGS_DIR):
-        shutil.rmtree(LOGS_DIR)
-    os.makedirs(LOGS_DIR, exist_ok=True)
-    # Write queries_searched.txt
-    with open(QUERIES_LOG, "w", encoding="utf-8") as f:
-        f.write("="*60 + "\n")
-        f.write(f"QUERIES SEARCHED LOG  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("="*60 + "\n")
-        f.write(f"Total Queries: {len(queries)}\n\n")
-        f.write("{:<5} {:<60} {:<6}\n".format('No.', 'Query', 'Mode'))
-        f.write("-"*80 + "\n")
-        for idx, (q, mode, _) in enumerate(queries, 1):
-            f.write(f"{idx:<5} {q:<60} {mode:<6}\n")
-    # Write combination_keywords.txt
-    with open(COMBOS_LOG, "w", encoding="utf-8") as f:
-        f.write("="*60 + "\n")
-        f.write(f"COMBINATION KEYWORDS  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("="*60 + "\n")
-        f.write(f"Total Combination Keywords: {len(combos)}\n\n")
-        for idx, c in enumerate(combos, 1):
-            f.write(f"{idx:>3}. {c}\n")
-    # Write accounts_searched.txt
-    with open(ACCOUNTS_LOG, "w", encoding="utf-8") as f:
-        f.write("="*60 + "\n")
-        f.write(f"ACCOUNTS SEARCHED  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("="*60 + "\n")
-        f.write(f"Total Accounts: {len(accounts)}\n\n")
-        for idx, a in enumerate(accounts, 1):
-            f.write(f"{idx:>3}. {a}\n")
-
-def log_print(msg, log_f):
+def log_print(msg):
     print(msg)
-    log_f.write(msg + '\n')
-    log_f.flush()
-
-# Main function to search all fire hashtags and accounts
-
-def main():
-    # Only use combination search (state + fire keyword) and account searches
-    combinations = get_all_fire_search_combinations()
-    accounts = get_all_fire_accounts()
-    searched = set()
-    queries = []
-    # Combination searches (live only)
-    for combo in combinations:
-        mode = "live"
-        key = (combo.lower(), mode)
-        if key not in searched:
-            queries.append((combo, mode, 10))  # Set scroll_times=10
-            searched.add(key)
-    # Account searches (live only)
-    for account in accounts:
-        mode = "live"
-        query = f'from:{account}'
-        key = (query.lower(), mode)
-        if key not in searched:
-            queries.append((query, mode, 10))  # Set scroll_times=10
-            searched.add(key)
-    # Remove duplicate queries (by query string and mode)
-    unique_queries = []
-    seen = set()
-    for q, mode, scroll_times in queries:
-        key = (q.lower(), mode)
-        if key not in seen:
-            unique_queries.append((q, mode, scroll_times))
-            seen.add(key)
-    save_logs(unique_queries, combinations, accounts)
-    batch_size = 6
-    from selenium.common.exceptions import WebDriverException
-    import time
-    import random
-    scraping_failed = False
-    with open(SCRAPE_LOG, "w", encoding="utf-8") as log_f:
-        driver = setup_driver()
-        twitter_login(driver)
-        for batch_start in range(0, len(unique_queries), batch_size):
-            batch = unique_queries[batch_start:batch_start+batch_size]
-            # Open tabs for this batch
-            for _ in range(len(batch) - 1):
-                driver.execute_script("window.open('about:blank', '_blank');")
-            for i, (query, mode, scroll_times) in enumerate(batch):
-                log_print(f"\nProcessing tab {i+1+batch_start}/{len(unique_queries)}: {query} (mode: {mode})", log_f)
-                # Retry logic for network errors
-                max_retries = 3
-                for attempt in range(1, max_retries + 1):
-                    try:
-                        scrape_recent_tweets_for_query(driver, query, mode=mode, scroll_times=scroll_times, tab_index=i, log_f=log_f)
-                        break  # Success, exit retry loop
-                    except WebDriverException as e:
-                        if "net::ERR_NAME_NOT_RESOLVED" in str(e):
-                            log_print(f"Network error on attempt {attempt} for query '{query}'. Retrying...", log_f)
-                            time.sleep(5)
-                        else:
-                            log_print(f"WebDriverException for query '{query}': {e}", log_f)
-                            break  # Don't retry for other errors
-                    except Exception as e:
-                        log_print(f"Unexpected error for query '{query}': {e}", log_f)
-                        break
-                else:
-                    log_print(f"Failed to load query '{query}' after {max_retries} attempts. Stopping all further scraping.", log_f)
-                    scraping_failed = True
-                    break
-                time.sleep(random.uniform(2, 4))
-            # Close all but the first tab to prepare for next batch
-            handles = driver.window_handles
-            for h in handles[1:]:
-                driver.switch_to.window(h)
-                driver.close()
-            driver.switch_to.window(driver.window_handles[0])
-            if scraping_failed:
-                break
-        driver.quit()
-        # Do not clean the raw JSON automatically
-        # clean_tweets_json()  # <-- Not called
-        from ai_fire_verifier import verify_and_save_to_excel
-        verify_and_save_to_excel(OUTPUT_RAW_FILE)
-
-us_states = [
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
-    "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
-    "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
-    "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
-    "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-]
-
-major_us_cities = [
-    "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas",
-    "San Jose", "Austin", "Jacksonville", "Fort Worth", "Columbus", "Charlotte", "San Francisco", "Indianapolis",
-    "Seattle", "Denver", "Washington", "Boston", "El Paso", "Nashville", "Detroit", "Oklahoma City", "Portland",
-    "Las Vegas", "Memphis", "Louisville", "Baltimore", "Milwaukee", "Albuquerque", "Tucson", "Fresno", "Sacramento",
-    "Mesa", "Kansas City", "Atlanta", "Omaha", "Colorado Springs", "Raleigh", "Miami", "Long Beach", "Virginia Beach",
-    "Oakland", "Minneapolis", "Tulsa", "Tampa", "Arlington"
-]
-
-
-
-# US states and major cities for filtering
-US_LOCATIONS = us_states + major_us_cities
-
-
-# Fire incident/damage keywords
-FIRE_INCIDENT_KEYWORDS = [
-    "burn", "evacuate", "evacuation", "damage", "destroy", "blaze", "smoke", "flames", "emergency", "brushfire", "structure fire", "forest fire", "house fire", "apartment fire", "building fire", "outbreak", "spread"
-]
-
-# Structure/damage keywords for fire incidents
-STRUCTURE_DAMAGE_KEYWORDS = [
-    "structure fire", "building fire", "house fire", "apartment fire", "commercial fire", "warehouse fire", "residential fire", "industrial fire", "office fire", "school fire", "church fire", "hospital fire", "barn fire", "garage fire", "hotel fire", "motel fire", "condo fire", "duplex fire", "multi-family fire", "business fire", "restaurant fire", "store fire", "shopping center fire", "mall fire",
-    "destroyed", "damaged", "total loss", "collapsed", "evacuated"
-]
-
-
-def is_today_or_yesterday(iso_timestamp):
-    try:
-        tweet_time = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
-        now = datetime.now(tweet_time.tzinfo)
-        today = now.date()
-        yesterday = today - timedelta(days=1)
-        return tweet_time.date() in (today, yesterday)
-    except Exception:
-        return False
-
-def tweet_mentions_fire_and_us_location_and_structure_damage(tweet):
-    content = tweet.get("content", "").lower()
-    # Check for fire/damage keywords
-    fire_present = any(kw in content for kw in FIRE_INCIDENT_KEYWORDS)
-    # Check for structure/damage keywords
-    structure_damage_present = any(kw in content for kw in STRUCTURE_DAMAGE_KEYWORDS)
-    # Check for US location
-    location_present = any(loc.lower() in content for loc in US_LOCATIONS)
-    return fire_present and structure_damage_present and location_present
-
-def clean_tweets_json():
-    tweets = load_existing_tweets(raw=True)
-    cleaned = [tw for tw in tweets if (
-        is_today_or_yesterday(tw.get("timestamp", "")) and
-        ((any(kw in tw.get("content", "").lower() for kw in FIRE_INCIDENT_KEYWORDS) or
-          any(kw in tw.get("content", "").lower() for kw in STRUCTURE_DAMAGE_KEYWORDS)) or
-         any(loc.lower() in tw.get("content", "").lower() for loc in US_LOCATIONS))
-    )]
-    with open(OUTPUT_CLEANED_FILE, "w", encoding="utf-8") as file:
-        json.dump(cleaned, file, indent=4, ensure_ascii=False)
-    print(f"🧹 Cleaned tweets_cleaned.json: {len(cleaned)} relevant tweets remain.")
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(msg + "\n")
 
 def filter_tweets_last_72_hours(input_path, output_path):
-    from datetime import datetime, timedelta, timezone
-    import json
+    from datetime import datetime, timezone
     with open(input_path, "r", encoding="utf-8") as f:
         tweets = json.load(f)
     now = datetime.now(timezone.utc)
     filtered = []
     for tweet in tweets:
         ts = tweet.get("timestamp", "")
+        content = tweet.get("content", "")
         try:
             tweet_time = datetime.fromisoformat(ts.replace('Z', '+00:00'))
-            if (now - tweet_time).total_seconds() <= 72 * 3600:
+            within_72h = (now - tweet_time).total_seconds() <= 72 * 3600
+            long_enough = len(content.strip()) >= 30
+            log_print(f"[DEBUG] Tweet timestamp: {ts} | Now: {now.isoformat()} | Within 72h: {within_72h} | Content length: {len(content.strip())} | Long enough: {long_enough}")
+            if within_72h and long_enough:
                 filtered.append(tweet)
-        except Exception:
+                # Save live after each addition
+                with open(output_path, "w", encoding="utf-8") as f_out:
+                    json.dump(filtered, f_out, indent=4, ensure_ascii=False)
+        except Exception as e:
+            log_print(f"[DEBUG] Error parsing timestamp '{ts}': {e}")
             continue
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(filtered, f, indent=4, ensure_ascii=False)
-    print(f"Filtered {len(filtered)} tweets from last 72 hours to {output_path}")
+    log_print(f"Filtered {len(filtered)} tweets from last 72 hours to {output_path}")
 
-def threaded_scrape(driver, query, mode, scroll_times, tab_index):
-    try:
-        scrape_recent_tweets_for_query(driver, query, mode=mode, scroll_times=scroll_times, tab_index=tab_index)
-    except Exception as e:
-        print(f"Thread error for query '{query}': {e}")
+def main():
+    combinations = get_all_fire_search_combinations()
+    accounts = get_all_fire_accounts()
+    queries = []
+    for combo in combinations:
+        queries.append((combo, "live", 10))
+    for account in accounts:
+        query = f'from:{account}'
+        queries.append((query, "live", 10))
+    total_queries = len(queries)
+    log_print(f"[INFO] Total queries to process: {total_queries}")
+    log_print(f"[INFO] Starting Chrome WebDriver...")
+    driver = setup_driver()
+    log_print(f"[INFO] WebDriver started.")
+    log_print(f"[INFO] Logging into Twitter...")
+    twitter_login(driver)
+    log_print(f"[INFO] Twitter login successful.")
+    for idx, (query, mode, scroll_times) in enumerate(queries, 1):
+        log_print(f"[INFO] Processing tab {idx}/{total_queries}: Query='{query}' | Mode={mode} | Scrolls={scroll_times}")
+        scrape_recent_tweets_for_query(driver, query, mode=mode, scroll_times=scroll_times)
+        log_print(f"[INFO] Finished processing tab {idx}/{total_queries}: Query='{query}'")
+        time.sleep(random.uniform(2, 4))
+    log_print(f"[INFO] Quitting WebDriver...")
+    driver.quit()
+    log_print(f"[INFO] WebDriver stopped.")
+    RAW_PATH = OUTPUT_RAW_FILE
+    CLEANED_PATH = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_cleaned_tweets.json")
+    log_print(f"[INFO] Filtering tweets from raw file to cleaned file...")
+    filter_tweets_last_72_hours(RAW_PATH, CLEANED_PATH)
+    log_print(f"[INFO] Running AI verifier on cleaned tweets...")
+    from ai_fire_verifier import verify_and_save_to_excel
+    verify_and_save_to_excel(CLEANED_PATH)
+    log_print(f"[INFO] All steps complete.")
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     print("Error: OPENAI_API_KEY environment variable is not set. Please set it before running the script.")
     exit(1)
 else:
-    # Mask all but the first and last 4 characters for security
     masked_key = OPENAI_API_KEY[:4] + "*" * (len(OPENAI_API_KEY) - 8) + OPENAI_API_KEY[-4:]
     print(f"OPENAI_API_KEY loaded: {masked_key}")
 
 if __name__ == "__main__":
-    main()
-    # After main scraping, filter tweets and process with AI verifier
-    RAW_PATH = OUTPUT_RAW_FILE
-    FILTERED_PATH = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_filtered_tweets.json")
-    filter_tweets_last_72_hours(RAW_PATH, FILTERED_PATH)
-    from ai_fire_verifier import verify_and_save_to_excel
-    verify_and_save_to_excel(FILTERED_PATH) 
+    main() 
