@@ -18,10 +18,12 @@
 # 🔥 Fire-Related Twitter Search Targets (USA Only)
 
 # Expanded US states
+# US_STATES = [
+#     "Arizona", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Idaho", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Michigan", "Minnesota", "Mississippi", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "South Carolina", "Tennessee", "Texas", "US Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "DC"
+# ]
 US_STATES = [
-    "Arizona", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Idaho", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Michigan", "Minnesota", "Mississippi", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "South Carolina", "Tennessee", "Texas", "US Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "DC"
-]
-
+       "California"
+   ]
 # Fire/structure keywords and perils
 FIRE_KEYWORDS = [
     "house fire", "apartment complex", "store fire", "commercial fire", "restaurant fire", "warehouse fire", "business fire", "pipe burst"

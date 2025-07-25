@@ -5,58 +5,57 @@ import pandas as pd
 from dotenv import load_dotenv
 from tqdm import tqdm
 from openpyxl import load_workbook
-from datetime import datetime, timedelta, timezone
-import glob
+from datetime import datetime, timedelta
+import re
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = openai
 
-def is_today_or_yesterday(iso_timestamp):
-    try:
-        tweet_time = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
-        now = datetime.now(tweet_time.tzinfo)
-        today = now.date()
-        yesterday = today - timedelta(days=1)
-        return tweet_time.date() in (today, yesterday)
-    except Exception:
-        return False
+FIRE_INCIDENT_KEYWORDS = [
+    "burn", "evacuate", "evacuation", "damage", "destroy", "blaze", "smoke", "flames", "emergency", "brushfire", "structure fire", "forest fire", "house fire", "apartment fire", "building fire", "outbreak", "spread"
+]
+STRUCTURE_DAMAGE_KEYWORDS = [
+    "structure fire", "building fire", "house fire", "apartment fire", "commercial fire", "warehouse fire", "residential fire", "industrial fire", "office fire", "school fire", "church fire", "hospital fire", "barn fire", "garage fire", "hotel fire", "motel fire", "condo fire", "duplex fire", "multi-family fire", "business fire", "restaurant fire", "store fire", "shopping center fire", "mall fire",
+    "destroyed", "damaged", "total loss", "collapsed", "evacuated"
+]
+US_LOCATIONS = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
+    "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+    "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
+    "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
+    "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+    "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas",
+    "San Jose", "Austin", "Jacksonville", "Fort Worth", "Columbus", "Charlotte", "San Francisco", "Indianapolis",
+    "Seattle", "Denver", "Washington", "Boston", "El Paso", "Nashville", "Detroit", "Oklahoma City", "Portland",
+    "Las Vegas", "Memphis", "Louisville", "Baltimore", "Milwaukee", "Albuquerque", "Tucson", "Fresno", "Sacramento",
+    "Mesa", "Kansas City", "Atlanta", "Omaha", "Colorado Springs", "Raleigh", "Miami", "Long Beach", "Virginia Beach",
+    "Oakland", "Minneapolis", "Tulsa", "Tampa", "Arlington"
+]
 
 def is_within_last_72_hours(iso_timestamp):
     try:
         tweet_time = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
-        now = datetime.now(timezone.utc)
+        now = datetime.now(tweet_time.tzinfo)
         return (now - tweet_time).total_seconds() <= 72 * 3600
     except Exception:
         return False
 
-def get_fire_related_score(content):
-    prompt = (
-        "On a scale of 0 to 10, how strongly is the following tweet related to fire damages or destruction in the United States? "
-        "A score of 0 means not related at all, 10 means it is definitely about fire damages or destruction in the USA. "
-        "Only use the tweet content for your evaluation.\n\n"
-        f"Tweet content: {content[:2000]}"
-    )
-    messages = [
-        {"role": "system", "content": "You are an AI that rates the fire-relatedness of tweets about fire damages or destruction in the USA. Respond with a single integer from 0 to 10."},
-        {"role": "user", "content": prompt}
-    ]
-    try:
-        ai_response = client.chat.completions.create(
-            model='gpt-4o-mini',
-            messages=messages,
-            temperature=0,
-        )
-        answer = ai_response.choices[0].message.content.strip()
-        # Extract the first integer in the answer
-        import re
-        match = re.search(r'\b(10|[0-9])\b', answer)
-        if match:
-            return int(match.group(1))
-        return answer
-    except Exception as e:
-        print(f"Error with OpenAI API (score): {e}")
-        return ""
+def is_relevant_tweet(tweet):
+    content = tweet.get("content", "").lower()
+    fire_present = any(kw in content for kw in FIRE_INCIDENT_KEYWORDS)
+    structure_damage_present = any(kw in content for kw in STRUCTURE_DAMAGE_KEYWORDS)
+    location_present = any(loc.lower() in content for loc in US_LOCATIONS)
+    return fire_present and (structure_damage_present or location_present)
+
+def clean_tweets_json(raw_path, cleaned_path):
+    with open(raw_path, "r", encoding="utf-8") as f:
+        tweets = json.load(f)
+    cleaned = [tw for tw in tweets if is_within_last_72_hours(tw.get("timestamp", ""))]
+    with open(cleaned_path, "w", encoding="utf-8") as f:
+        json.dump(cleaned, f, indent=4, ensure_ascii=False)
+    print(f"🧹 Cleaned {cleaned_path}: {len(cleaned)} recent tweets remain.")
 
 def verify_fire_incident(title, content, url, country="USA"):
     print(url)
@@ -89,76 +88,65 @@ def verify_fire_incident(title, content, url, country="USA"):
         print(f"Error with OpenAI API: {e}")
         return "no"
 
-def update_live_json(live_json_path, entry):
-    import threading
-    lock = threading.Lock()
-    lock.acquire()
+def get_fire_related_score(content):
+    prompt = (
+        "On a scale of 0 to 10, how strongly is the following tweet related to fire damages or destruction in the United States? "
+        "A score of 0 means not related at all, 10 means it is definitely about fire damages or destruction in the USA. "
+        "Only use the tweet content for your evaluation.\n\n"
+        f"Tweet content: {content[:2000]}"
+    )
+    messages = [
+        {"role": "system", "content": "You are an AI that rates the fire-relatedness of tweets about fire damages or destruction in the USA. Respond with a single integer from 0 to 10."},
+        {"role": "user", "content": prompt}
+    ]
     try:
-        if os.path.exists(live_json_path):
-            with open(live_json_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-        else:
-            data = []
-        data.append(entry)
-        with open(live_json_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-    finally:
-        lock.release()
+        ai_response = client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=messages,
+            temperature=0,
+        )
+        answer = ai_response.choices[0].message.content.strip()
+        # Extract the first integer in the answer
+        match = re.search(r'\b(10|[0-9])\b', answer)
+        if match:
+            return int(match.group(1))
+        return answer
+    except Exception as e:
+        print(f"Error with OpenAI API (score): {e}")
+        return ""
 
-def autosize_excel_columns(excel_path):
-    wb = load_workbook(excel_path)
-    ws = wb.active
-    for column_cells in ws.columns:
-        max_length = 0
-        column = column_cells[0].column_letter
-        for cell in column_cells:
-            try:
-                cell_length = len(str(cell.value)) if cell.value else 0
-                if cell_length > max_length:
-                    max_length = cell_length
-            except Exception:
-                pass
-        adjusted_width = min(max_length + 2, 80)  # Cap width for readability
-        ws.column_dimensions[column].width = adjusted_width
-    wb.save(excel_path)
+def update_live_json(live_json_path, row):
+    if os.path.exists(live_json_path):
+        with open(live_json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data.append(row)
+        with open(live_json_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+    else:
+        with open(live_json_path, "w", encoding="utf-8") as f:
+            json.dump([row], f, indent=4)
 
 def autosize_and_format_excel(excel_path):
-    from openpyxl.utils import get_column_letter
-    wb = load_workbook(excel_path)
-    ws = wb.active
-    default_width = 30
-    # Set default column width and wrap text
-    for col in ws.columns:
-        col_letter = get_column_letter(col[0].column)
-        ws.column_dimensions[col_letter].width = default_width
-        for cell in col:
-            cell.alignment = cell.alignment.copy(wrap_text=True)
-    # Auto-fit row height to content
-    for row in ws.iter_rows():
-        max_height = 15
-        for cell in row:
-            if cell.value:
-                lines = str(cell.value).count("\n") + 1
-                length = len(str(cell.value))
-                # Estimate height: 15 per line, or more if long text
-                est_height = max(15, min(150, lines * 15 + length // 50 * 15))
-                if est_height > max_height:
-                    max_height = est_height
-        ws.row_dimensions[row[0].row].height = max_height
-    # Make URL column clickable
-    url_col = None
-    for idx, cell in enumerate(ws[1], 1):
-        if cell.value and str(cell.value).lower() == "url":
-            url_col = idx
-            break
-    if url_col:
-        for row in ws.iter_rows(min_row=2, min_col=url_col, max_col=url_col):
+    try:
+        wb = load_workbook(excel_path)
+        ws = wb.active
+        for row in ws.iter_rows():
             for cell in row:
-                if cell.value and str(cell.value).startswith("http"):
-                    cell.hyperlink = cell.value
-                    cell.style = "Hyperlink"
-    wb.save(excel_path)
-
+                cell.number_format = '@' # Format as text
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2 # Adjust as needed
+            ws.column_dimensions[column].width = adjusted_width
+        wb.save(excel_path)
+    except Exception as e:
+        print(f"Error autosizing Excel: {e}")
 
 def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fires.xlsx", live_json_path="output/live_verified_fires.json"):
     import os
@@ -167,6 +155,8 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
     os.makedirs(os.path.dirname(live_json_path), exist_ok=True)
     with open(cleaned_json_path, "r", encoding="utf-8") as f:
         tweets = json.load(f)
+    # Filter for tweets within the last 72 hours
+    tweets = [tw for tw in tweets if is_within_last_72_hours(tw.get("timestamp", ""))]
     verified_rows = []
     for tweet in tqdm(tweets, desc="Verifying tweets with AI"):
         title = tweet.get("content", "")[:100]
@@ -240,17 +230,13 @@ def verify_and_save_to_excel(cleaned_json_path, excel_path="output/verified_fire
 
 if __name__ == "__main__":
     import sys
-    # If no argument is given, use the latest date-prefixed *_filtered_tweets.json file
-    if len(sys.argv) > 1:
-        json_path = sys.argv[1]
-    else:
-        filtered_files = sorted(glob.glob("*_filtered_tweets.json"), reverse=True)
-        if filtered_files:
-            json_path = filtered_files[0]
-            print(f"No input file specified. Using latest filtered file: {json_path}")
-        else:
-            print("No filtered tweets file found. Please run tweet_fire_search.py first or specify a file.")
-            exit(1)
+    # Default to 'tweets_cleaned.json' if no argument is given
+    json_path = sys.argv[1] if len(sys.argv) > 1 else "tweets_cleaned.json"
     excel_path = "output/verified_fires.xlsx"
     live_json_path = "output/live_verified_fires.json"
+    # If input is tweets_raw.json, create tweets_cleaned.json first
+    if os.path.basename(json_path) == "tweets_raw.json":
+        cleaned_path = "tweets_cleaned.json"
+        clean_tweets_json(json_path, cleaned_path)
+        json_path = cleaned_path
     verify_and_save_to_excel(json_path, excel_path, live_json_path) 

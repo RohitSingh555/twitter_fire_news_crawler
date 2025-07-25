@@ -1,0 +1,34 @@
+============================================================
+QUERIES SEARCHED LOG  |  2025-07-24 07:22:26
+============================================================
+Total Queries: 27
+
+No.   Query                                                        Mode  
+--------------------------------------------------------------------------------
+1     California house fire                                        live  
+2     California apartment complex                                 live  
+3     California store fire                                        live  
+4     California commercial fire                                   live  
+5     California restaurant fire                                   live  
+6     California warehouse fire                                    live  
+7     California business fire                                     live  
+8     California pipe burst                                        live  
+9     from:DFWscanner                                              live  
+10    from:DallasTexasTV                                           live  
+11    from:NWSSanAntonio                                           live  
+12    from:FriscoFFD                                               live  
+13    from:RedCrossTXGC                                            live  
+14    from:whatsupTucson                                           live  
+15    from:WacoTXFire                                              live  
+16    from:SouthMetroPIO                                           live  
+17    from:NWSBoulder                                              live  
+18    from:SeattleFire                                             live  
+19    from:CityofMiamiFire                                         live  
+20    from:PeterNewcomb41                                          live  
+21    from:ffxfirerescue                                           live  
+22    from:ScannerRadioDFW                                         live  
+23    from:sfgafirerescue                                          live  
+24    from:THEJFRD                                                 live  
+25    from:ChicagoMWeather                                         live  
+26    from:ToledoFire                                              live  
+27    from:AustinFireInfo                                          live  

@@ -12,23 +12,28 @@ from fire_search_targets import get_all_fire_hashtags, get_all_fire_accounts, ge
 from selenium.common.exceptions import WebDriverException
 from urllib.parse import quote
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from ai_fire_verifier import verify_and_save_to_excel
 import threading
 import shutil
 from contextlib import redirect_stdout
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Date string for filenames
+DATE_STR = datetime.now().strftime('%d%b').lower()  # e.g., '24jul'
 
 TWITTER_USERNAME = "TechWfm63921"
 TWITTER_PASSWORD = "Pass@123"
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "tweets.json")
-OUTPUT_RAW_FILE = os.path.join(os.path.dirname(__file__), "tweets_raw.json")
-OUTPUT_CLEANED_FILE = os.path.join(os.path.dirname(__file__), "tweets_cleaned.json")
+OUTPUT_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets.json")
+OUTPUT_RAW_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets_raw.json")
+OUTPUT_CLEANED_FILE = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_tweets_cleaned.json")
 
-LOGS_DIR = os.path.join(os.path.dirname(__file__), "logs")
-QUERIES_LOG = os.path.join(LOGS_DIR, "queries_searched.txt")
-COMBOS_LOG = os.path.join(LOGS_DIR, "combination_keywords.txt")
-ACCOUNTS_LOG = os.path.join(LOGS_DIR, "accounts_searched.txt")
-SCRAPE_LOG = os.path.join(LOGS_DIR, "scrape.log")
+LOGS_DIR = os.path.join(os.path.dirname(__file__), f"logs_{DATE_STR}")
+QUERIES_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_queries_searched.txt")
+COMBOS_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_combination_keywords.txt")
+ACCOUNTS_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_accounts_searched.txt")
+SCRAPE_LOG = os.path.join(LOGS_DIR, f"{DATE_STR}_scrape.log")
 
 # ---
 # All search keywords, hashtags, perils, and state lists are now sourced from fire_search_targets.py
@@ -40,12 +45,14 @@ SCRAPE_LOG = os.path.join(LOGS_DIR, "scrape.log")
 # Setup WebDriver
 
 def setup_driver():
+    from selenium.webdriver.chrome.options import Options
     chrome_options = Options()
-    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-infobars")
-    chrome_options.add_argument("--disable-extensions")
+    chrome_options.binary_location = "/usr/bin/google-chrome"
+    # Print all options for debugging
+    print("Chrome options:", chrome_options.arguments)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
@@ -76,15 +83,26 @@ def save_tweet(tweet_data, raw=True):
 
 def twitter_login(driver):
     driver.get("https://twitter.com/login")
-    time.sleep(5)
-    username_input = driver.find_element(By.NAME, "text")
-    username_input.send_keys(TWITTER_USERNAME)
-    username_input.send_keys(Keys.RETURN)
-    time.sleep(3)
-    password_input = driver.find_element(By.NAME, "password")
-    password_input.send_keys(TWITTER_PASSWORD)
-    password_input.send_keys(Keys.RETURN)
-    time.sleep(5)
+    try:
+        # Wait for the username/email field (update the name if Twitter changes it)
+        username_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.NAME, "text"))
+        )
+        username_input.send_keys(TWITTER_USERNAME)
+        username_input.send_keys(Keys.RETURN)
+        time.sleep(3)
+        # Wait for the password field
+        password_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.NAME, "password"))
+        )
+        password_input.send_keys(TWITTER_PASSWORD)
+        password_input.send_keys(Keys.RETURN)
+        time.sleep(5)
+    except Exception as e:
+        print(f"Error during Twitter login: {e}")
+        print("Page source for debugging:")
+        print(driver.page_source)
+        raise
 
 # Scrape recent tweets for a given search query
 
@@ -216,7 +234,7 @@ def main():
         mode = "live"
         key = (combo.lower(), mode)
         if key not in searched:
-            queries.append((combo, mode, 4))
+            queries.append((combo, mode, 10))  # Set scroll_times=10
             searched.add(key)
     # Account searches (live only)
     for account in accounts:
@@ -224,7 +242,7 @@ def main():
         query = f'from:{account}'
         key = (query.lower(), mode)
         if key not in searched:
-            queries.append((query, mode, 4))
+            queries.append((query, mode, 10))  # Set scroll_times=10
             searched.add(key)
     # Remove duplicate queries (by query string and mode)
     unique_queries = []
@@ -353,11 +371,45 @@ def clean_tweets_json():
         json.dump(cleaned, file, indent=4, ensure_ascii=False)
     print(f"🧹 Cleaned tweets_cleaned.json: {len(cleaned)} relevant tweets remain.")
 
+def filter_tweets_last_72_hours(input_path, output_path):
+    from datetime import datetime, timedelta, timezone
+    import json
+    with open(input_path, "r", encoding="utf-8") as f:
+        tweets = json.load(f)
+    now = datetime.now(timezone.utc)
+    filtered = []
+    for tweet in tweets:
+        ts = tweet.get("timestamp", "")
+        try:
+            tweet_time = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            if (now - tweet_time).total_seconds() <= 72 * 3600:
+                filtered.append(tweet)
+        except Exception:
+            continue
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(filtered, f, indent=4, ensure_ascii=False)
+    print(f"Filtered {len(filtered)} tweets from last 72 hours to {output_path}")
+
 def threaded_scrape(driver, query, mode, scroll_times, tab_index):
     try:
         scrape_recent_tweets_for_query(driver, query, mode=mode, scroll_times=scroll_times, tab_index=tab_index)
     except Exception as e:
         print(f"Thread error for query '{query}': {e}")
 
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    print("Error: OPENAI_API_KEY environment variable is not set. Please set it before running the script.")
+    exit(1)
+else:
+    # Mask all but the first and last 4 characters for security
+    masked_key = OPENAI_API_KEY[:4] + "*" * (len(OPENAI_API_KEY) - 8) + OPENAI_API_KEY[-4:]
+    print(f"OPENAI_API_KEY loaded: {masked_key}")
+
 if __name__ == "__main__":
-    main() 
+    main()
+    # After main scraping, filter tweets and process with AI verifier
+    RAW_PATH = OUTPUT_RAW_FILE
+    FILTERED_PATH = os.path.join(os.path.dirname(__file__), f"{DATE_STR}_filtered_tweets.json")
+    filter_tweets_last_72_hours(RAW_PATH, FILTERED_PATH)
+    from ai_fire_verifier import verify_and_save_to_excel
+    verify_and_save_to_excel(FILTERED_PATH) 

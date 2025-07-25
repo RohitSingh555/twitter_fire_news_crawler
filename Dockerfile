@@ -27,11 +27,10 @@ COPY . .
 ENV OPENAI_API_KEY=""
 
 # Optional: copy .env if you want to use it (uncomment if needed)
-# COPY .env .
+COPY .env .
 
-# Set Chrome options for headless operation
-ENV CHROME_BIN=/usr/bin/google-chrome
-ENV CHROME_OPTIONS="--headless --no-sandbox --disable-dev-shm-usage --disable-gpu --window-size=1920,1080"
+# Ensure /tmp is world-writable for Chrome user data dirs
+RUN chmod 1777 /tmp
 
 # Default command: run the main script
-CMD ["python", "tweet_fire_search.py"] 
+CMD ["python", "ai_fire_verifier.py", "tweets_raw.json"] 
